@@ -56,16 +56,11 @@
 
 ;;;; Generic operators and overloads
 
-(define primitives-wrapped?
-  (if (not (top-level-bound? 'primitives-wrapped?))
-      #f
-      #t))
-
-(define original-+ (if primitives-wrapped? original-+ +))
-(define original-- (if primitives-wrapped? original-- -))
-(define original-* (if primitives-wrapped? original-* *))
-(define original-< (if primitives-wrapped? original-< <))
-(define original-= (if primitives-wrapped? original-= =))
+(define original-+ (eval '+ (scheme-environment)))
+(define original-- (eval '- (scheme-environment)))
+(define original-* (eval '* (scheme-environment)))
+(define original-< (eval '< (scheme-environment)))
+(define original-= (eval '= (scheme-environment)))
 
 (define (generic+ x y) (if (or (smt? x) (smt? y)) (smt-binop "+" x y) (original-+ x y)))
 (define (generic- x y) (if (or (smt? x) (smt? y)) (smt-binop "-" x y) (original-- x y)))
@@ -78,8 +73,6 @@
 (define * generic*)
 (define < generic<)
 (define = generic=)
-
-(set! primitives-wrapped? #t)
 
 ;;;; SMTLIB2 serialization
 
