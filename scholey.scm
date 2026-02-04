@@ -50,6 +50,8 @@
 (define orig+ (eval '+ (scheme-environment)))
 (define orig- (eval '- (scheme-environment)))
 (define orig* (eval '* (scheme-environment)))
+(define orig-mod (eval 'mod (scheme-environment)))
+(define orig-div (eval 'div (scheme-environment)))
 (define orig< (eval '< (scheme-environment)))
 (define orig> (eval '> (scheme-environment)))
 (define orig<= (eval '<= (scheme-environment)))
@@ -80,14 +82,13 @@
 (define + (generic-arith "+" orig+))
 (define - (generic-arith "-" orig-))
 (define * (generic-arith "*" orig*))
+(define mod (generic-arith "mod" orig-mod))
+(define div (generic-arith "div" orig-div))
 (define < (generic-cmp "<" orig<))
 (define > (generic-cmp ">" orig>))
 (define <= (generic-cmp "<=" orig<=))
 (define >= (generic-cmp ">=" orig>=))
 (define = (generic-cmp "=" orig=))
-
-(define (smt-mod x y) (smt-binop "mod" x y))
-(define (smt-div x y) (smt-binop "div" x y))
 (define (smt-not x)
   (if (smt-bool? x)
       (make-smt-bool (string-append "(not " (smt-bool-expr x) ")"))
@@ -272,11 +273,11 @@
              (let loop ((i 0) (n n))
                (if (orig< i 5)
                    (begin
-                     (assert! (= (smt-mod n 5) 1))
-                     (loop (orig+ i 1) (- n (+ 1 (smt-div (- n 1) 5)))))
+                     (assert! (= (mod n 5) 1))
+                     (loop (orig+ i 1) (- n (+ 1 (div (- n 1) 5)))))
                    (begin
                      (assert! (> n 0))
-                     (assert! (= (smt-mod n 5) 1)))))))))
+                     (assert! (= (mod n 5) 1)))))))))
 
 ;; Run examples
 (display "=== Example 1: Arithmetic ===") (newline)
